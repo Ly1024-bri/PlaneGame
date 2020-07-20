@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TimerTask;
-
+//继承JPanel画板
 public class PlayGame  extends JPanel{
 
     public static BufferedImage hero0;
@@ -34,12 +34,15 @@ public class PlayGame  extends JPanel{
     public static BufferedImage ee1;
     public static BufferedImage ee2;
     public static BufferedImage ee3;
+    //定义游戏窗体大小
     public static final int WIDTH = 400;
     public static final int HEIGHT = 650;
+    //定义游戏状态
     public static final int START = 0;
     public static final int RUNING = 1;
     public static final int PAUSE = 2;
     public static final int GAME_OVER = 3;
+    //静态代码块提前加载图片文件且只用加载一次
     static {
         try {
             hero0 = ImageIO.read(PlayGame.class.getResourceAsStream("pic/hero0.png"));
@@ -69,37 +72,53 @@ public class PlayGame  extends JPanel{
             e.printStackTrace();
         }
     }
+
+    //创建其他飞行物与子弹集合
     private ArrayList<AirObject> flys;
     private ArrayList<Bullet> bullets;
     private int num = START;
+    //无参构造初始化集合
     private PlayGame(){
         flys = new ArrayList<>();
         bullets = new ArrayList<>();
     }
+    //创建主机对象
     private Hero h = new Hero();
+    //开始游戏
     public void action(){
         java.util.Timer timer = new java.util.Timer();
-            timer.schedule(new TimerTask() {
+            timer.schedule( new TimerTask() {
                 @Override
                 public void run() {
                     if (num == RUNING) {
+                        //创建其他飞行物
                         someFly();
+                        //主机移动
                         h.move();
+                        //隐藏鼠标指针
                         Image imageCursor =
                                 Toolkit.getDefaultToolkit().getImage("");
                         setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
                                 imageCursor,  new Point(h.getX(), h.getY()), "cursor"));
+                        //其他飞行物移动
                         step();
+                        //子弹移动
                         bulletsStep();
+                        //判断飞行物越界
                         boundsAction();
+                        //判断子弹越界
                         shootBounds();
+                        //发射子弹
                         shootAction();
+                        //飞行物与主机撞击
                         boomWithPlane();
+                        //子弹打中飞行物
                         shootAir();
                     }
                     repaint();
             }
         },2000,10);
+            //调用鼠标监听器
         MouseAdapter adapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -137,7 +156,7 @@ public class PlayGame  extends JPanel{
         this.addMouseListener(adapter);
         this.addMouseMotionListener(adapter);
     }
-
+    //飞行物与主机撞击
     private void boomWithPlane(){
         for (int i = 0; i< flys.size();i++){
             AirObject fly = flys.get(i);
@@ -154,8 +173,10 @@ public class PlayGame  extends JPanel{
             }
         }
     }
+    //设置英雄机初始化血量与大敌机初始血量
     private static int life = 3;
     private static int bigPlaneLife = 3;
+    //英雄机血量
     private void heroBlood(){
         h.setLife(life);
         life = life-1;
@@ -166,6 +187,7 @@ public class PlayGame  extends JPanel{
     private void flysBoom(){
 
     }
+    //子弹打中飞行物
     private void shootAir(){
         for (int i = 0;i<flys.size();i++){
             AirObject fly = flys.get(i);
@@ -214,7 +236,7 @@ public class PlayGame  extends JPanel{
             }
         }
     }
-
+    //发射子弹
     private int i1 = 0;
     private void shootAction() {
 
@@ -226,13 +248,14 @@ public class PlayGame  extends JPanel{
             }
         }
     }
-
+    //子弹移动
     private void bulletsStep(){
         for (int i = 0; i< bullets.size();i++){
             Bullet b = bullets.get(i);
             b.move();
         }
     }
+    //判断飞行物越界
     private void boundsAction(){
         for (int i = 0; i< flys.size();i++){
             AirObject fly = flys.get(i);
@@ -242,6 +265,7 @@ public class PlayGame  extends JPanel{
             }
         }
     }
+    //判断子弹越界
     private void shootBounds(){
         for (int i = 0; i< bullets.size();i++){
             Bullet b= bullets.get(i);
@@ -251,6 +275,7 @@ public class PlayGame  extends JPanel{
             }
         }
     }
+    //其他飞行物移动
     private void step(){
         for (int i = 0;i<flys.size();i++){
             AirObject fly = flys.get(i);
@@ -267,9 +292,10 @@ public class PlayGame  extends JPanel{
         for (int i = 0;i<bullets.size();i++){
             Bullet b = bullets.get(i);
             g.drawImage(b.getImg(),b.getX(), b.getY(),this);
-            b.move();
+
         }
     }
+    //创建其他飞行物
     private int flyIndex = 0;
     private void someFly(){
         flyIndex++;
@@ -289,6 +315,7 @@ public class PlayGame  extends JPanel{
         }
 
     }
+    //初始化得分
     public static int score;
     @Override
     public void paint(Graphics g){
@@ -300,7 +327,11 @@ public class PlayGame  extends JPanel{
         g.drawString("life:"+life,30,60);
         g.drawImage(h.getImg(),h.getX(),h.getY(),this);
         Fly(g);
+        //一局游戏结束后从新开始游戏
         if (num == START){
+            score=0;
+            life=3;
+            bigPlaneLife=3;
             h.setX(130);
             h.setY(400);
             g.drawImage(start,0,0,null);
@@ -310,9 +341,7 @@ public class PlayGame  extends JPanel{
             g.drawImage(pause,-15,0,null);
         }else if(num == GAME_OVER){
             g.drawImage(gameover,0,0,null);
-            score=0;
-            life=3;
-            bigPlaneLife=3;
+
         }else if (num == RUNING){
             paintBullets(g);
         }

@@ -1,8 +1,9 @@
 package GamePlane.Play;
 
 import java.awt.image.BufferedImage;
-
+//飞行物父类
 public abstract class AirObject {
+    //定义x坐标与y坐标，物体图片，图片的长和高
     private BufferedImage img;
     private int width;
     private int height;
@@ -52,6 +53,6 @@ public abstract class AirObject {
         return height;
     }
 
-
+//创建移动方法
     abstract void move();
 }

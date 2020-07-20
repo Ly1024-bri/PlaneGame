@@ -1,6 +1,8 @@
 package GamePlane.Play;
-
+//大飞机类
 public class BigPlane extends AirObject{
+    //定义飞机血量与速度
+
     private int planelife;
     private int speed;
 

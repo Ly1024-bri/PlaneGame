@@ -1,6 +1,7 @@
 package GamePlane.Play;
-
+//小蜜蜂类
 public class Bee extends AirObject{
+    //定义横向速度与纵向速度
     private int x_speed;
     private int y_speed;
     Bee(){
